@@ -1,1 +1,14 @@
 /main.class
+/DijkstraSP.class
+/DijkstraSPT.class
+/Dijkstra.class
+/EdgeWeightedDigraph.class
+/DirectedEdge.class
+/Bag.class
+/Bag$LinkedIterator.class
+/Bag$Node.class
+/IndexMinPQ.class
+/IndexMinPQ$HeapIterator.class
+/Stack.class
+/Stack$LinkedIterator.class
+/Stack$Node.class
