@@ -3,7 +3,7 @@ import java.io.IOException;
 
 public class UI {
 
-    public static boolean userInterface() {
+    public static boolean userInterface() { 
     	boolean quit = false;
   	  	while(quit != true) {
   	  		System.out.print("Choose an option below or enter 4 to quit the program:\n"
