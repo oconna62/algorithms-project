@@ -3,7 +3,7 @@ import java.io.IOException;
 
 public class UI {
 
-    public static boolean userInterface() { 
+    public static boolean userInterface() {  
     	Scanner input = new Scanner(System.in);
     	boolean quit = false;
     	
