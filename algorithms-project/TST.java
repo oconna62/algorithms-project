@@ -1,10 +1,6 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
 
 // https://algs4.cs.princeton.edu/52trie/TST.java.html
@@ -238,7 +234,7 @@ public class TST<Value> {
             	name.add(relevant);
         	}
     		
-    		TST<Integer> searchTree = new TST();
+    		TST<Integer> searchTree = new TST<Integer>();
     		String temp;
     		for (int i = 0; i < size; i++) {
     			temp = name.get(i);

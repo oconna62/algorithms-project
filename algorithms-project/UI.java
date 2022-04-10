@@ -1,17 +1,19 @@
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 
 public class UI {
 	public static Scanner input = new Scanner(System.in);
 	
-	public static boolean userInterface() {
+	public static boolean userInterface() throws FileNotFoundException, ParseException {
 		
 		boolean quit = false;
 
 		System.out.print("Choose an option below or enter 0 to exit the program:\n"
-				+ "to find the shortest path between two bus stop enter 1,\n" 
-				+ "to find a stop name's information enter 2,\n"
-				+ "to find trips within a specific time of arrival sorted by trip ID enter 3:\n");
+				+ "- To find the shortest path between two bus stop enter 1,\n" 
+				+ "- To find a stop name's information enter 2,\n"
+				+ "- To find trips within a specific time of arrival sorted by trip ID enter 3.\n");
 
 		int inputValue = 0;
 		if (input.hasNextInt()) {
@@ -35,6 +37,7 @@ public class UI {
 				break;
 
 			case 3:
+				time.main(null);
 				quit = false;
 				break;
 			}
@@ -46,7 +49,7 @@ public class UI {
 		return quit;
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, ParseException {
 		boolean quit = false;
 		do {
 			quit = userInterface();
