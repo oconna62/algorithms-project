@@ -15,3 +15,13 @@
 /UI.class
 /shortestPath.class
 /readFiles.class
+/stops.class
+/trips.class
+/times.class
+/TST.class
+/TST$Node.class
+/Queue.class
+/Queue$LinkedIterator.class
+/Queue$Node.class
+/searchTree.class
+/searchTree$Node.class
