@@ -12,7 +12,7 @@ public class UI {
 		boolean quit = false;
 		Scanner input = new Scanner(System.in);
 		System.out.print("Choose an option below or enter 0 to exit the program:\n"
-				+ "- To find the shortest path between two bus stop enter 1,\n" 
+				+ "- To find the shortest path between two bus stops enter 1,\n" 
 				+ "- To find a stop name's information enter 2,\n"
 				+ "- To find trips within a specific time of arrival sorted by trip ID enter 3.\n"
 				+ "==> ");
@@ -47,14 +47,11 @@ public class UI {
 				time.main(null);
 				quit = false;
 				break;
-			}
-			try {
-				TimeUnit.SECONDS.sleep(1);		// small delay to read in data - prevents menu disrupting previous output.
-			} catch (InterruptedException e) {
-				
 			}	
 		} else {
+			System.out.println("=================================================");
 			System.out.println("Please enter a valid number (0 -> 3).");
+			System.out.println("=================================================");
 			quit = false;
 		}
 		
@@ -63,11 +60,14 @@ public class UI {
 
 	public static void main(String[] args) throws IOException, ParseException {
 		DijkstraSP.readFiles();
-		System.out.println("---------------------------" + "\n------dijkstra set up------" + "\n---------------------------");
+		System.out.print("Loading.");
 		TST.setupTST();
-		System.out.println("------TST initialised------" + "\n---------------------------");
+		System.out.print(".");
 		time.validateTrips();
-		System.out.println("----bus times validated----" + "\n---------------------------");
+		System.out.print(".\n");
+		System.out.println("================================================="
+				+"\n Welcome to the Vancouver Bus Management System."
+				+"\n=================================================");
 		boolean quit = false;
 		do {
 			quit = userInterface();

@@ -244,27 +244,36 @@ public class TST<Value> {
     public static void main(String[] args) {
     	Boolean quit = false;
     	Scanner input = new Scanner(System.in);
-    	do {
+    	while (!quit) {
+    		System.out.println("=================================================");
         	System.out.print("Enter stop name: ");
         	String inputName = input.nextLine().toUpperCase();
         	ArrayList<String> matches = searchTree.keysWithPrefix(inputName);
         		
         	if (matches.size() > 0) {
+        		System.out.println("=================================================");
         		System.out.println(matches.size() + " matching stops: ");
+        		System.out.println("=================================================");
         		String line1 = details.get(0);
-        		System.out.println(line1.substring(3)); // fix first line
+        		System.out.println(line1.substring(3).toUpperCase()); // fix first line
         		for (int i = 0; i < matches.size(); i++) {
         			String matchName = matches.get(i);
         			int index = Integer.parseInt(searchTree.get(matchName).toString());
         			System.out.println(details.get(index));
         		}
-        		System.out.print("---------------------------\n");
-        		quit = true;
+        		System.out.println("=================================================");
+        		System.out.print("Enter any key to continue, or 'exit' to return to the main menu: ");
+				String checkExit = input.next();
+				if (checkExit.equalsIgnoreCase("exit")) {
+					quit = true;
+				}
         	}
         	else {
+        		System.out.println("=================================================");
         		System.out.println("No bus stop with name '" + inputName + "', please try again.");
     			quit = false;
         	}
-    	}while (quit == false);   	
+    	}  
+    	System.out.println("=================================================");
     }
 }

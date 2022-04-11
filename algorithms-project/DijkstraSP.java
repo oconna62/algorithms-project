@@ -1,18 +1,18 @@
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Scanner;
 
 // reference: https://algs4.cs.princeton.edu/44sp/DijkstraSP.java.html
 public class DijkstraSP {
     private static double[] distTo;          
     private static DirectedEdge[] edgeTo;    
-    private static IndexMinPQ<Double> priorityQueue;    
-    static ArrayList<stops> stop = new ArrayList<>();		
-	ArrayList<stops> s = new ArrayList<>();
+    private static IndexMinPQ<Double> priorityQueue;    		
+
 	static ArrayList<trips> list = new ArrayList<>();		
 	static EdgeWeightedDigraph graph;
 
@@ -100,9 +100,9 @@ public class DijkstraSP {
     public static Iterable<DirectedEdge> pathTo(int v) {
         validateVertex(v);
         if (!hasPathTo(v)) return null;
-        Stack<DirectedEdge> path = new Stack<DirectedEdge>(); 
+        Bag<DirectedEdge> path = new Bag<DirectedEdge>(); // STACK
         for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
-            path.push(e);
+            path.add(e);
         }
         return path;
     }
@@ -167,90 +167,78 @@ public class DijkstraSP {
     }
     
     
-    public static void readFiles() {
+    public static void readFiles() throws ParseException {
 
 		try {
-			//readStops;
+			// stops.txt;
 			Scanner scanner = new Scanner(new FileReader("stops.txt")); 
-			
+			scanner.nextLine(); // skip first line
+
+			int max = 0;
 			while(scanner.hasNextLine()) { 
 				String stops = scanner.nextLine();
 				String[] line = stops.split(",");
-				if (!line[1].equals("stop_code")) {
-					int stop_id = Integer.parseInt(line[0]);
-					int stop_code = (line[1].equals(" ")) ? -1 : Integer.parseInt(String.valueOf(line[1]));
-					String stop_name = line[2];
-					String stop_desc = line[3];
-					double stop_lat = Double.parseDouble(line[4]);
-					double stop_lon = Double.parseDouble(line[5]);
-					String zone_id = line[6];
-					String stop_url = line[7];
-					int location_type = Integer.parseInt(line[8]);
-					String parent_station = (line.length == 9) ? "" : line[9];
-					stops s = new stops(stop_id, stop_code, stop_name, stop_desc, stop_lat,
-							stop_lon,zone_id,stop_url,location_type, parent_station);
-					stop.add(s);
+				int stop_id = Integer.parseInt(line[0]);
+				if(max <= stop_id) {
+					max=stop_id +1;
 				}
-			}
-			
-			int max=0;
-			for(stops s: stop) {
-				if(max <= s.stop_id)
-					max=s.stop_id +1;
-			}
+			}	
 			graph = new EdgeWeightedDigraph(max);
 			
-			for(stops s : stop){
-				DirectedEdge d = new DirectedEdge(s.stop_id,s.stop_id,0);
-				graph.addEdge(d);
-			}
-			
-			//readTransfers;
+			// transfers.txt;
 			scanner = new Scanner(new FileReader("transfers.txt")); 
-			
+			scanner.nextLine(); // skip first line
 			while(scanner.hasNextLine()) { 
 				String transfers = scanner.nextLine();
 				String[] line1 = transfers.split(",");
-				if(!line1[1].equals("to_stop_id")) {
-					int from_stop_id = Integer.parseInt(line1[0]);
-					int to_stop_id = Integer.parseInt(line1[1]);
-					int transfer_type = Integer.parseInt(line1[2]);
-					double min_transfer_time = (line1.length == 3) ? -100 : Double.parseDouble(line1[3]);
-					double cost = 0;
-					if(transfer_type == 2)  {
-						cost = min_transfer_time /100;
-					}
-					else if(transfer_type == 0) {
-						cost = 2;
-					}
 
-					DirectedEdge edge = new DirectedEdge(from_stop_id, to_stop_id, cost);
-					graph.addEdge(edge);
+				int from_stop_id = Integer.parseInt(line1[0]);
+				int to_stop_id = Integer.parseInt(line1[1]);
+				int transfer_type = Integer.parseInt(line1[2]);
+				double min_transfer_time = (line1.length == 3) ? -100 : Double.parseDouble(line1[3]);
+				double cost = 0;
+				
+				if(transfer_type == 0) {
+					cost = 2;
 				}
+				else if(transfer_type == 2)  {
+					cost = min_transfer_time/100;
+				}
+
+				DirectedEdge edge = new DirectedEdge(from_stop_id, to_stop_id, cost);
+				graph.addEdge(edge);
+				
 			}
 			
-			//ReadStopTimes;
+			// stop_times.txt;
 			scanner = new Scanner(new FileReader("stop_times.txt")); 
+			scanner.nextLine(); // skip first line
+			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+			String maxTime = "23:59:59";
+			Date maximum = timeFormat.parse(maxTime);
 			
 			while(scanner.hasNextLine()) { 
 				String times = scanner.nextLine();
 				String[] line2 = times.split(",");
-				if(!line2[1].equals("arrival_time")) {
-					int trip_id = Integer.parseInt(line2[0]);
-					String arrival_time = line2[1];
-					String departure_time = line2[2];
-					if(time(arrival_time)<24 && time(departure_time)<24) {
-						int stop_id = Integer.parseInt(line2[3]);
-						int stop_sequence = Integer.parseInt(line2[4]);
-						int stop_headsign = (line2[5].equals("")) ? -100 : Integer.parseInt(line2[5]);
-						int pickup_type = Integer.parseInt(line2[6]);
-						int drop_off_type = Integer.parseInt(line2[7]);
-						double shape_dist_traveled = (line2.length == 8) ? -100 : Double.parseDouble(line2[8]);
-						trips t = new trips(trip_id,arrival_time,departure_time,stop_id,stop_sequence,
-								stop_headsign, pickup_type, drop_off_type, shape_dist_traveled);
-						list.add(t);
-					}
+				
+				int trip_id = Integer.parseInt(line2[0]);
+				String arrival_time = line2[1];
+				Date arrival = timeFormat.parse(arrival_time);
+				String departure_time = line2[2];
+				Date departure = timeFormat.parse(departure_time);
+				
+				if(arrival.getTime()<maximum.getTime() && departure.getTime()<maximum.getTime()) {
+					int stop_id = Integer.parseInt(line2[3]);
+					int stop_sequence = Integer.parseInt(line2[4]);
+					int stop_headsign = (line2[5].equals("")) ? -100 : Integer.parseInt(line2[5]);
+					int pickup_type = Integer.parseInt(line2[6]);
+					int drop_off_type = Integer.parseInt(line2[7]);
+					double shape_dist_traveled = (line2.length == 8) ? -100 : Double.parseDouble(line2[8]);
+					trips t = new trips(trip_id,arrival_time,departure_time,stop_id,stop_sequence,
+							stop_headsign, pickup_type, drop_off_type, shape_dist_traveled);
+					list.add(t);
 				}
+				
 			}
 			scanner.close();
 			int size = list.size();
@@ -277,73 +265,69 @@ public class DijkstraSP {
 	}
 
 	public static void main(String[] args) {
-		readFiles();
+		boolean quit = false;
 		Scanner input = new Scanner(System.in);
-		System.out.print("Please enter bus stop 1: ");
-		int stop1 = input.nextInt();
-		System.out.print("Please enter bus stop 2: ");
-		int stop2 = input.nextInt();
-		
-		ShortestPath(graph, stop1);
-		double distance = distTo(stop2);
-		pathTo(stop2);
-		
-		System.out.println("From - "+ stop1 +" to - "+ stop2 +"  weight - " + distance);
-		Iterable<DirectedEdge> path_itr = pathTo(stop2);
-
-		for(DirectedEdge p: path_itr) {
-			System.out.println("From - "+ p.from() + " to - "+ p.to() + " weight - "+p.weight());
-		}
-
-		ArrayList<Integer> path = getEnrouteStops(stop2);
-
-		for (int p : path) {
-			//if(p==0) System.out.print(stop1);
-			System.out.print(p + " -> ");
-		}
-		System.out.println("---------------------------\n");
-	} 
-		
-	
-	/*
-	private static int verifyInput(String stopString) {
-		Scanner input = new Scanner(System.in);
-		int stopNumber = -1;
-		boolean valid = false;
-		while(!valid) {
-			System.out.println(stopString);
-			if(input.hasNextInt()) {
-				stopNumber = input.nextInt();
+		while(!quit) {
+			System.out.println("=================================================");
+			System.out.print("Please enter bus stop 1: ");
+			int stop1 = 0;
+			String inputString = input.next();
+			boolean isInt1 = false;
+			try {
+				stop1 = Integer.parseInt(inputString);
+				isInt1 = true;
+			}catch (Exception e) {	
+			}
+			System.out.print("Please enter bus stop 2: ");
+			int stop2 = 0;
+			inputString = input.next();
+			boolean isInt2 = false;
+			boolean same = false;
+			try {
+				stop2 = Integer.parseInt(inputString);
+				if(stop1 != stop2) isInt2 = true;
+				else same = true;
+			}catch (Exception e) {
+			}
+			
+			if (isInt1 && isInt2) {
+				ShortestPath(graph, stop1);		
+				Iterable<DirectedEdge> path_itr = pathTo(stop2);
 				
-				if(graph.findStop(stopNumber)) { // if in graph
-					valid = true;
+				if (path_itr == null) {
+					System.out.println("Invalid path, please try again.");
+					quit = false;
 				}
-				
+					
 				else {
-					System.out.println("There is no stop with the id: \"" + stop + "\" on our system.");
-				}
+					double distance = distTo(stop2);	
+					System.out.println("=================================================");
+					System.out.println("Shortest route is as follows:");
+					System.out.println("=================================================");
+					for(DirectedEdge p: path_itr) {
+						System.out.println("From "+ p.from() + " --> "+ p.to() + " weight: "+p.weight());
+					}
+					System.out.println("=================================================");			
+					System.out.println("Shortest route from " + stop1 + " to "+ stop2 + " is " + distance);
+					System.out.println("=================================================");
+					
+					System.out.print("Enter any key to continue, or 'exit' to return to the main menu: ");
+					String checkExit = input.next();
+					if (checkExit.equalsIgnoreCase("exit")) {
+						quit = true;
+					}
+				}		
 			}
 			else {
-				System.out.println("Invalid input. Please only enter integers.");
-				input.nextLine();				
+				if(same) {
+					System.out.println("Invalid input, please enter different stop numbers.");
+				}
+				else System.out.println("Invalid input, please try again.");
 			}
 		}
-		input.close();
-		return stopNumber;
+		System.out.println("=================================================");
 	}
-	*/
 
-	public static ArrayList<Integer> getEnrouteStops(int v){
-		ArrayList<Integer> res = new ArrayList<>();
-		Iterable<DirectedEdge> path = pathTo(v);
-		res.add(v);
-		for(DirectedEdge e : path) {
-			res.add(e.from());
-		}
-		Collections.reverse(res);
-		return res;
-	}
-	
 	private static void ShortestPath(EdgeWeightedDigraph G, int s) {
 		distTo = new double[G.V()];
 		edgeTo = new DirectedEdge[G.V()];
@@ -352,10 +336,10 @@ public class DijkstraSP {
 			distTo[v] = Double.POSITIVE_INFINITY;
 			distTo[s] = 0.0;
 		}
-		// relax vertices in order of distance from s
+		
 		priorityQueue = new IndexMinPQ<Double>(G.V());
 		priorityQueue.insert(s, distTo[s]);
-		while (!priorityQueue.isEmpty()) {
+		while (priorityQueue.size()!=0) {
 			int v = priorityQueue.delMin();
 			for (DirectedEdge e : G.adj(v))
 				relax(e);
