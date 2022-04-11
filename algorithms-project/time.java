@@ -13,7 +13,7 @@ public class time {
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 		Scanner input = new Scanner(System.in);
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-		timeFormat.setLenient(false); // strictly (hh.mm.ss) format only
+		timeFormat.setLenient(false); // strictly (hh:mm:ss) format only
 
 		boolean quit = false;
 		while (!quit) {
@@ -65,12 +65,11 @@ public class time {
 	public static ArrayList<String> sort(ArrayList<String> matchingTrips) {
 		// https://www.javatpoint.com/how-to-sort-arraylist-in-java
 		System.out.println("Sorting by tripID...");
-		Collections.sort(matchingTrips); // uses iterative mergesort, more stable - test for time
+		Collections.sort(matchingTrips); // uses iterative mergesort, more stable
 		return matchingTrips;
 	}
 
 	public static void validateTrips() throws ParseException, FileNotFoundException {
-		// ArrayList<String> validTrips = new ArrayList<String>();
 		FileReader f = new FileReader("stop_times.txt");
 		Scanner scanner = new Scanner(f);
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");

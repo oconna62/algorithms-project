@@ -166,7 +166,6 @@ public class DijkstraSP {
     
     
     public static void readFiles() throws ParseException {
-
 		try {
 			// stops.txt;
 			Scanner scanner = new Scanner(new FileReader("stops.txt")); 

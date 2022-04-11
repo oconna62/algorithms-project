@@ -49,9 +49,9 @@ public class UI {
 				break;
 			}	
 		} else {
-			System.out.println("=================================================");
-			System.out.println("Please enter a valid number (0 -> 3).");
-			System.out.println("=================================================");
+			System.out.println("================================================="
+					+"\nPlease enter a valid number (0 -> 3)."
+					+"\n=================================================");
 			quit = false;
 		}
 		
