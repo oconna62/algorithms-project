@@ -7,6 +7,8 @@ import java.util.Scanner;
 import java.util.*;
 
 public class time {
+	public static ArrayList<String> validTrips = new ArrayList<String>();
+	public static String line1; //trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_type,shape_dist_traveled
 	public static void main(String[] args) throws FileNotFoundException, ParseException {
 		
 			Scanner input = new Scanner(System.in);
@@ -14,60 +16,63 @@ public class time {
 			SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 			timeFormat.setLenient(false);	// strictly (hh.mm.ss) format only
 			
-			ArrayList<String> validTrips = validateTrips();
-			System.out.println("Trips validated");
+			//ArrayList<String> validTrips = validateTrips();
+			//System.out.println("Trips validated");
 			ArrayList<String> matchingTrips = new ArrayList<String>();
 			
 			boolean quit = false;
 			while(!quit) {
 				System.out.print("Enter time in hh:mm:ss format: ");
 				String inputTime = input.next();
-				timeFormat.parse(inputTime);	// add error handling
-
-				for (int i = 0; i < validTrips.size(); i++) {
-					String trip = validTrips.get(i);
-					String[] split = trip.split(",");
-						
-					Date tripTime = timeFormat.parse(split[1]);
-					Date inputTime1 = timeFormat.parse(inputTime);
-					if (tripTime.getTime() == inputTime1.getTime()) {
-						matchingTrips.add(trip);
+				try {
+					timeFormat.parse(inputTime);
+					for (int i = 0; i < validTrips.size(); i++) {
+						String trip = validTrips.get(i);
+						String[] split = trip.split(",");
+							
+						Date tripTime = timeFormat.parse(split[1]);
+						Date inputTime1 = timeFormat.parse(inputTime);
+						if (tripTime.getTime() == inputTime1.getTime()) {
+							matchingTrips.add(trip);
+						}
 					}
-				}
-
-				ArrayList<String> sortedTrips = sort(matchingTrips);
-				
-				if (sortedTrips.size() != 0) {
-					System.out.println(sortedTrips.size() + " matches found:");
-					for(int i = 0; i < sortedTrips.size(); i++) {
-						System.out.println(sortedTrips.get(i));
+					ArrayList<String> sortedTrips = sort(matchingTrips);
+					
+					if (sortedTrips.size() != 0) {
+						System.out.println(sortedTrips.size() + " matches found:");
+						System.out.println(line1);
+						for(int i = 0; i < sortedTrips.size(); i++) {
+							System.out.println(sortedTrips.get(i));
+						}
+						quit = true;
 					}
-					quit = true;
-				}
-				else {
-					System.out.println("No matches, please try another time:");
-					input.nextLine();
+					else {
+						System.out.println("No matches, please try another time.");
+						input.nextLine();
+					}
+					System.out.print("---------------------------\n");
+				}catch(ParseException e) {
+					System.out.println("Invalid input.");
 				}
 			}
-			input.close();
 	}
 
 	public static ArrayList<String> sort(ArrayList<String> matchingTrips) {
 		//https://www.javatpoint.com/how-to-sort-arraylist-in-java
-		System.out.println("Sorting by tripID");
+		System.out.println("Sorting by tripID...");
 		Collections.sort(matchingTrips);	// uses iterative mergesort, more stable - test for time
 		return matchingTrips;
 	}
 
-	public static ArrayList<String> validateTrips() throws ParseException, FileNotFoundException {
-		ArrayList<String> validTrips = new ArrayList<String>();
+	public static void validateTrips() throws ParseException, FileNotFoundException {
+		//ArrayList<String> validTrips = new ArrayList<String>();
 		FileReader f = new FileReader("stop_times.txt");
 		Scanner scanner = new Scanner(f);
 		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 		String maxTime = "23:59:59";
 		Date maximum = timeFormat.parse(maxTime);
 			
-		scanner.nextLine(); // skip first line
+		line1 = scanner.nextLine(); // skip first line
 		String nextLine = "";
 		String[] split;
 		Date time;
@@ -80,8 +85,9 @@ public class time {
 	        	validTrips.add(nextLine);
 	        }
 		}
+		
 		scanner.close();
-		return validTrips;
+		//return validTrips;
 	}
 	
 	

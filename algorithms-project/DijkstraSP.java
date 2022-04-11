@@ -100,7 +100,7 @@ public class DijkstraSP {
     public static Iterable<DirectedEdge> pathTo(int v) {
         validateVertex(v);
         if (!hasPathTo(v)) return null;
-        Stack<DirectedEdge> path = new Stack<DirectedEdge>(); // change to graph and see if still works
+        Stack<DirectedEdge> path = new Stack<DirectedEdge>(); 
         for (DirectedEdge e = edgeTo[v]; e != null; e = edgeTo[e.from()]) {
             path.push(e);
         }
@@ -278,18 +278,10 @@ public class DijkstraSP {
 
 	public static void main(String[] args) {
 		readFiles();
-		/*
-		System.out.println();
-		String stop1String = "Please enter bus stop 1: ";
-		int stop1 = verifyInput(stop1String);
-
-		String stop2String = "Please enter bus stop 2: ";
-		int stop2 = verifyInput(stop2String);
-		*/
 		Scanner input = new Scanner(System.in);
-		System.out.println("Please enter bus stop 1: ");
+		System.out.print("Please enter bus stop 1: ");
 		int stop1 = input.nextInt();
-		System.out.println("Please enter bus stop 2: ");
+		System.out.print("Please enter bus stop 2: ");
 		int stop2 = input.nextInt();
 		
 		ShortestPath(graph, stop1);
@@ -309,6 +301,7 @@ public class DijkstraSP {
 			//if(p==0) System.out.print(stop1);
 			System.out.print(p + " -> ");
 		}
+		System.out.println("---------------------------\n");
 	} 
 		
 	

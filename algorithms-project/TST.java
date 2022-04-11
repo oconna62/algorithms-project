@@ -8,7 +8,10 @@ import java.util.Scanner;
 public class TST<Value> {
     private int n;              // size
     private Node<Value> root;   // root of TST
-
+    public static TST<Integer> searchTree = new TST<Integer>();
+    public static ArrayList<String> name = new ArrayList<>();
+	public static ArrayList<String> details = new ArrayList<>();
+    
     private static class Node<Value> {
         private char c;                        // character
         private Node<Value> left, mid, right;  // left, middle, and right subtries
@@ -200,16 +203,11 @@ public class TST<Value> {
         if (c == '.' || c > x.c) collect(x.right, prefix, i, pattern, queue);
     }
     
-    public static void main(String[] args) {
+    public static void setupTST() {
     	try {
-    		Boolean quit = false;
     		Scanner scanner = new Scanner(new FileReader("stops.txt")); 
         	int size=0;
         	String stop = "";
-        	
-        	ArrayList<String> name = new ArrayList<>();
-        	ArrayList<String> details = new ArrayList<>();
-    		
     		while (scanner.hasNextLine()) {
         		size++;
         		stop = scanner.nextLine();
@@ -233,38 +231,40 @@ public class TST<Value> {
         		
             	name.add(relevant);
         	}
-    		
-    		TST<Integer> searchTree = new TST<Integer>();
     		String temp;
     		for (int i = 0; i < size; i++) {
     			temp = name.get(i);
     			searchTree.put(temp, i);
     		}
-    		Scanner input = new Scanner(System.in);
-    		do {
-        		System.out.println("Enter stop name: ");
-        		String inputName = input.nextLine().toUpperCase();
-        		ArrayList<String> matches = searchTree.keysWithPrefix(inputName);
-        		
-        		if (matches.size() > 0) {
-        			System.out.println(matches.size() + " matching stops: ");
-        			for (int i = 0; i < matches.size(); i++) {
-        				String matchName = matches.get(i);
-        				int index = Integer.parseInt(searchTree.get(matchName).toString());
-        				System.out.println(details.get(index));
-        			}
-        			System.out.print("\n");
-        			quit = true;
-        		}
-        		else {
-        			System.out.println("No bus stop with name '" + inputName + "', please try again.");
-    				quit = false;
-        		}
-    		}while (quit == false);
-    		input.close();
-    		
-    	}catch(IOException e){
+    	}catch(IOException e) {
     		System.out.print("Error handling, try again.");
     	}
+    	
+    }
+    public static void main(String[] args) {
+    	Boolean quit = false;
+    	Scanner input = new Scanner(System.in);
+    	do {
+        	System.out.print("Enter stop name: ");
+        	String inputName = input.nextLine().toUpperCase();
+        	ArrayList<String> matches = searchTree.keysWithPrefix(inputName);
+        		
+        	if (matches.size() > 0) {
+        		System.out.println(matches.size() + " matching stops: ");
+        		String line1 = details.get(0);
+        		System.out.println(line1.substring(3)); // fix first line
+        		for (int i = 0; i < matches.size(); i++) {
+        			String matchName = matches.get(i);
+        			int index = Integer.parseInt(searchTree.get(matchName).toString());
+        			System.out.println(details.get(index));
+        		}
+        		System.out.print("---------------------------\n");
+        		quit = true;
+        	}
+        	else {
+        		System.out.println("No bus stop with name '" + inputName + "', please try again.");
+    			quit = false;
+        	}
+    	}while (quit == false);   	
     }
 }
