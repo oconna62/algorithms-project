@@ -11,9 +11,7 @@ import java.util.Scanner;
 public class DijkstraSP {
     private static double[] distTo;          
     private static DirectedEdge[] edgeTo;    
-    private static IndexMinPQ<Double> priorityQueue;    		
-
-	static ArrayList<trips> list = new ArrayList<>();		
+    private static IndexMinPQ<Double> priorityQueue;    				
 	static EdgeWeightedDigraph graph;
 
     /**
@@ -217,6 +215,7 @@ public class DijkstraSP {
 			String maxTime = "23:59:59";
 			Date maximum = timeFormat.parse(maxTime);
 			
+			ArrayList<Integer> list = new ArrayList<Integer>();
 			while(scanner.hasNextLine()) { 
 				String times = scanner.nextLine();
 				String[] line2 = times.split(",");
@@ -229,25 +228,21 @@ public class DijkstraSP {
 				
 				if(arrival.getTime()<maximum.getTime() && departure.getTime()<maximum.getTime()) {
 					int stop_id = Integer.parseInt(line2[3]);
-					int stop_sequence = Integer.parseInt(line2[4]);
-					int stop_headsign = (line2[5].equals("")) ? -100 : Integer.parseInt(line2[5]);
-					int pickup_type = Integer.parseInt(line2[6]);
-					int drop_off_type = Integer.parseInt(line2[7]);
-					double shape_dist_traveled = (line2.length == 8) ? -100 : Double.parseDouble(line2[8]);
-					trips t = new trips(trip_id,arrival_time,departure_time,stop_id,stop_sequence,
-							stop_headsign, pickup_type, drop_off_type, shape_dist_traveled);
-					list.add(t);
+					list.add(trip_id);
+					list.add(stop_id);
 				}
 				
 			}
 			scanner.close();
-			int size = list.size();
-			for(int i=0; i<size-1; i++) {
-				trips trip1 = list.get(i);
-				trips trip2 = list.get(i+1);
-
-				if(trip1.trip_id == trip2.trip_id) {
-					DirectedEdge newEdge = new DirectedEdge(trip1.stop_id, trip2.stop_id, 1);
+			
+			for(int i=0; i<list.size()-3; i=i+2) {
+				int tripID1 = list.get(i);
+				int stopID1 = list.get(i+1);
+				int tripID2 = list.get(i+2);
+				int stopID2 = list.get(i+3);
+				
+				if(tripID1 == tripID2) {
+					DirectedEdge newEdge = new DirectedEdge(stopID1, stopID2, 1);
 					graph.addEdge(newEdge);
 				}
 			}
@@ -255,13 +250,6 @@ public class DijkstraSP {
 		} catch (FileNotFoundException e) {
 			System.out.println("Files not found.");
 		}
-	}
-
-	public static int time(String time) {
-		String[] parts = time.strip().split(":");
-		int hour = Integer.parseInt(parts[0]);
-
-		return hour;
 	}
 
 	public static void main(String[] args) {
@@ -291,7 +279,7 @@ public class DijkstraSP {
 			}
 			
 			if (isInt1 && isInt2) {
-				ShortestPath(graph, stop1);		
+				shortestPath(graph, stop1);		
 				Iterable<DirectedEdge> path_itr = pathTo(stop2);
 				
 				if (path_itr == null) {
@@ -328,7 +316,7 @@ public class DijkstraSP {
 		System.out.println("=================================================");
 	}
 
-	private static void ShortestPath(EdgeWeightedDigraph G, int s) {
+	private static void shortestPath(EdgeWeightedDigraph G, int s) {
 		distTo = new double[G.V()];
 		edgeTo = new DirectedEdge[G.V()];
 
