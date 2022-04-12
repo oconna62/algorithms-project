@@ -32,7 +32,10 @@ public class DijkstraSP {
         distTo = new double[G.V()];
         edgeTo = new DirectedEdge[G.V()];
 
-        validateVertex(s);
+        if(!validateVertex(s)) {
+        	System.out.println("Failed to validate vertex.");
+        	return;
+        }
 
         for (int v = 0; v < G.V(); v++)
             distTo[v] = Double.POSITIVE_INFINITY;
@@ -158,10 +161,12 @@ public class DijkstraSP {
     }
 
     // throw an IllegalArgumentException unless {@code 0 <= v < V}
-    private static void validateVertex(int v) {
+    private static boolean validateVertex(int v) {
         int V = distTo.length;
-        if (v < 0 || v >= V)
-            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V-1));
+        if (v < 0 || v >= V) {
+        	return false;
+        }  
+		return true;
     }
     
     
@@ -252,84 +257,72 @@ public class DijkstraSP {
 	}
 
 	public static void main(String[] args) {
-		boolean quit = false;
-		Scanner input = new Scanner(System.in);
-		while(!quit) {
-			System.out.println("=================================================");
-			System.out.print("Please enter bus stop 1: ");
-			int stop1 = 0;
-			String inputString = input.next();
-			boolean isInt1 = false;
-			try {
-				stop1 = Integer.parseInt(inputString);
-				isInt1 = true;
-			}catch (Exception e) {	
-			}
-			System.out.print("Please enter bus stop 2: ");
-			int stop2 = 0;
-			inputString = input.next();
-			boolean isInt2 = false;
-			boolean same = false;
-			try {
-				stop2 = Integer.parseInt(inputString);
-				if(stop1 != stop2) isInt2 = true;
-				else same = true;
-			}catch (Exception e) {
-			}
-			
-			if (isInt1 && isInt2) {
-				shortestPath(graph, stop1);		
-				Iterable<DirectedEdge> path_itr = pathTo(stop2);
+		try {
+			boolean quit = false;
+			Scanner input = new Scanner(System.in);
+			while(!quit) {
+				System.out.println("=================================================");
+				System.out.print("Please enter bus stop 1: ");
+				int stop1 = 0;
+				String inputString = input.next();
+				boolean isInt1 = false;
+				try {
+					stop1 = Integer.parseInt(inputString);
+					isInt1 = true;
+				}catch (Exception e) {	
+				}
+				System.out.print("Please enter bus stop 2: ");
+				int stop2 = 0;
+				inputString = input.next();
+				boolean isInt2 = false;
+				boolean same = false;
+				try {
+					stop2 = Integer.parseInt(inputString);
+					if(stop1 != stop2) isInt2 = true;
+					else same = true;
+				}catch (Exception e) {
+				}
 				
-				if (path_itr == null) {
-					System.out.println("Invalid path, please try again.");
-					quit = false;
-				}
+				if (isInt1 && isInt2) {
+					new DijkstraSP(graph, stop1);
+					Iterable<DirectedEdge> path_itr = pathTo(stop2);
 					
+					if (path_itr == null) {
+						System.out.println("Invalid path, please try again.");
+						quit = false;
+					}
+						
+					else {
+						
+						double distance = distTo(stop2);	
+						System.out.println("=================================================");
+						System.out.println("Shortest route is as follows:");
+						System.out.println("=================================================");
+						for(DirectedEdge p: path_itr) {
+							System.out.println("From "+ p.from() + " --> "+ p.to() + " weight: "+p.weight());
+						}
+						System.out.println("=================================================");			
+						System.out.println("Shortest route from " + stop1 + " to "+ stop2 + " is " + distance);
+						System.out.println("=================================================");
+						
+						System.out.print("Enter any key to continue, or 'exit' to return to the main menu: ");
+						String checkExit = input.next();
+						if (checkExit.equalsIgnoreCase("exit")) {
+							quit = true;
+						}
+					}		
+				}
 				else {
-					double distance = distTo(stop2);	
-					System.out.println("=================================================");
-					System.out.println("Shortest route is as follows:");
-					System.out.println("=================================================");
-					for(DirectedEdge p: path_itr) {
-						System.out.println("From "+ p.from() + " --> "+ p.to() + " weight: "+p.weight());
+					if(same) {
+						System.out.println("Invalid input, please enter different stop numbers.");
 					}
-					System.out.println("=================================================");			
-					System.out.println("Shortest route from " + stop1 + " to "+ stop2 + " is " + distance);
-					System.out.println("=================================================");
-					
-					System.out.print("Enter any key to continue, or 'exit' to return to the main menu: ");
-					String checkExit = input.next();
-					if (checkExit.equalsIgnoreCase("exit")) {
-						quit = true;
-					}
-				}		
-			}
-			else {
-				if(same) {
-					System.out.println("Invalid input, please enter different stop numbers.");
+					else System.out.println("Invalid input, please try again.");
 				}
-				else System.out.println("Invalid input, please try again.");
 			}
-		}
-		System.out.println("=================================================");
-	}
-
-	private static void shortestPath(EdgeWeightedDigraph G, int s) {
-		distTo = new double[G.V()];
-		edgeTo = new DirectedEdge[G.V()];
-
-		for(int v=0; v< G.V(); v++) {
-			distTo[v] = Double.POSITIVE_INFINITY;
-			distTo[s] = 0.0;
-		}
+			System.out.println("=================================================");
 		
-		priorityQueue = new IndexMinPQ<Double>(G.V());
-		priorityQueue.insert(s, distTo[s]);
-		while (priorityQueue.size()!=0) {
-			int v = priorityQueue.delMin();
-			for (DirectedEdge e : G.adj(v))
-				relax(e);
+		}catch(ArrayIndexOutOfBoundsException ex) {
+			System.out.println("Invalid input, please try again.");
 		}
 	}
 }
